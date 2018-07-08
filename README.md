@@ -1,2 +1,3 @@
-# Decisiontreeforinfantdata
-### dataset birthwt can be found from MASS package
+# Simple data mining techniques 
+### Decision tree: dataset birthwt can be found from MASS package
+###
