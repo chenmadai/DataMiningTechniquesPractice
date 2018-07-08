@@ -1,0 +1,64 @@
+---
+title: "Predict Infant Birth Weights Decision Trees Approach"
+author: "Jie Chen"
+date: "08/07/2018"
+output: pdf_document
+---
+#######################
+####Decision Trees#####
+#######################
+```{r }
+### Set Up
+library(MASS)
+library(rpart)
+library(ggplot2)
+library(tidyverse) 
+library(readr)     
+library(mice)
+summary(birthwt)
+
+# bwt as response, other variables as predictors
+# plot response
+ggplot(birthwt,aes(x=bwt,fill=bwt))+geom_histogram(bins = 30)
+# convert to categorical variables
+birthdata <- birthwt %>%
+  mutate(low=as.factor(low)) %>%
+  mutate(race=as.factor(race))%>%
+  mutate(smoke=as.factor(smoke))%>%
+  mutate(ht=as.factor(ht))%>%
+  mutate(ui=as.factor(ui))
+# plot other variables 
+gather(birthdata,x,y,low:ftv) %>% ggplot(aes(x=y))+geom_bar()+facet_wrap(~x,scales="free",ncol = 3)
+
+```
+
+
+#### train,validate and test ####
+```{r }
+library(doParallel)
+library(caret)
+set.seed(3)
+index <- createDataPartition(birthdata$bwt,p=0.8,list = FALSE)
+trainbirth<- birthdata[index,] 
+testbirth <- birthdata[-index,]
+
+library(rpart)
+library(rpart.plot)
+
+set.seed(3)
+tree1 <- rpart(low~.-bwt,
+            data = trainbirth,
+            method = "class")
+rpart.plot(tree1, extra = 100)
+
+birthpred <- predict(tree1,testbirth,type = 'class')
+table(birthpred,testbirth$low)
+## acurracy = (22+4)/(22+4+6+4)=72%
+
+```
+
+
+
+```{r}
+```
+
